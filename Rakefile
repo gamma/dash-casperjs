@@ -3,9 +3,15 @@ require 'nokogiri'
 namespace :docs do
   task :download do
     # Download the API docs
-    sh "curl -O https://media.readthedocs.org/dash/casperjs/latest/CasperJS.tgz"
-    sh "tar xfz CasperJS.tgz"
-    rm "CasperJS.tgz"
+    sh "if [ ! -d casperjs ]; then git clone https://github.com/n1k0/casperjs.git; fi"
+    
+    sh "cd casperjs; make docs"
+
+    # Create structure
+    sh "mkdir -p CasperJS.docset/Contents/Resources/Documents"
+
+    # Copy the Info.plist into the right place
+    sh "cp -a casperjs/docs/_build/* CasperJS.docset/Contents/Resources/Documents"
 
     # Copy the Info.plist into the right place
     cp "Info.plist", "CasperJS.docset/Contents"
